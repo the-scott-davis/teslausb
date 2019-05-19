@@ -18,10 +18,9 @@ then
   return &> /dev/null || exit 0
 fi
 
-if ! hash mkfs.btrfs
+if ! hash mkfs.xfs
 then
-  setup_progress "Can't find btrfs tools. Please install manually or use the correct prebuilt"
-  return 1 &> /dev/null || exit 1
+  apt-get -y --force-yes install xfsprogs
 fi
 
 BACKINGFILES_MOUNTPOINT="$1"
@@ -42,7 +41,7 @@ ORIGINAL_DISK_IDENTIFIER=$( fdisk -l /dev/mmcblk0 | grep -e "^Disk identifier" |
 
 setup_progress "Modifying partition table for backing files partition..."
 BACKINGFILES_PARTITION_END_SPEC="$(( $LAST_BACKINGFILES_PARTITION_DESIRED_BYTE / 1000000 ))M"
-parted -a optimal -m /dev/mmcblk0 unit B mkpart primary btrfs "$FIRST_BACKINGFILES_PARTITION_BYTE" "$BACKINGFILES_PARTITION_END_SPEC"
+parted -a optimal -m /dev/mmcblk0 unit B mkpart primary xfs "$FIRST_BACKINGFILES_PARTITION_BYTE" "$BACKINGFILES_PARTITION_END_SPEC"
 
 setup_progress "Modifying partition table for mutable (writable) partition for script usage..."
 MUTABLE_PARTITION_START_SPEC="$BACKINGFILES_PARTITION_END_SPEC"
@@ -56,8 +55,8 @@ sed -i "s/${ORIGINAL_DISK_IDENTIFIER}/${NEW_DISK_IDENTIFIER}/" /boot/cmdline.txt
 
 setup_progress "Formatting new partitions..."
 # needs -f option to force recreating over previously existing partition
-mkfs.btrfs -f -L backingfiles /dev/mmcblk0p3
+mkfs.xfs -f -m reflink=1 -L backingfiles /dev/mmcblk0p3
 mkfs.ext4 -L mutable /dev/mmcblk0p4
 
-echo "LABEL=backingfiles $BACKINGFILES_MOUNTPOINT btrfs auto,rw,noatime 0 2" >> /etc/fstab
+echo "LABEL=backingfiles $BACKINGFILES_MOUNTPOINT xfs auto,rw,noatime 0 2" >> /etc/fstab
 echo "LABEL=mutable $MUTABLE_MOUNTPOINT ext4 auto,rw 0 2" >> /etc/fstab
