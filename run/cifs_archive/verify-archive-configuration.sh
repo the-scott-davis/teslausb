@@ -38,9 +38,9 @@ function check_archive_mountable () {
 
   local mount_failed=false
   log_progress "Mount command-line: "
-  log_progress "mount -t cifs //$1/$2 $test_mount_location -o vers=3.0,username=teslacam,password=sample,iocharset=utf8,nounix,sec=ntlmssp,noperm,rw -v"
+  log_progress "mount -t cifs //$1/$2 $test_mount_location -o vers=3.0,username=teslacam,password=sample,iocharset=utf8,nounix,sec=ntlmssp,noperm,rw"
   log_progress "new mount command running"
-  mount -t cifs "//$1/$2" "$test_mount_location" -o "vers=3.0,username=teslacam,password=sample,iocharset=utf8,nounix,sec=ntlmssp,noperm,rw -v" || mount_failed=true
+  mount -t cifs "//$1/$2" "$test_mount_location" -o "vers=3.0,username=teslacam,password=sample,iocharset=utf8,nounix,sec=ntlmssp,noperm,rw" || mount_failed=true
 
   if [ "$mount_failed" = true ]
   then
