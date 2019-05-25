@@ -28,13 +28,9 @@ function check_archive_mountable () {
   
   if [ ! -e "$test_mount_location" ]
   then
+    log_progress "making archive test directory"
     mkdir "$test_mount_location"
   fi
-  
-  local cifs_version="${cifs_version:-3.0}"
-
-  local tmp_credentials_file_path="/tmp/teslaCamArchiveCredentials"
-  /root/bin/write-archive-configs-to.sh "$tmp_credentials_file_path"
 
   local mount_failed=false
   log_progress "Mount command-line: "
