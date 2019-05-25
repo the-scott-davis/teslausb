@@ -25,7 +25,7 @@ function configure_archive () {
 
   if ! grep -w -q "$archive_path" /etc/fstab
   then
-    echo "//$archiveserver/$sharename $archive_path cifs vers=${cifs_version},credentials=${credentials_file_path},iocharset=utf8,file_mode=0777,dir_mode=0777 0" >> /etc/fstab
+    echo "//$archiveserver/$sharename $archive_path cifs vers=3.0,username=teslacam,password=sample,iocharset=utf8,nounix,sec=ntlmssp,noperm,rw 0" >> /etc/fstab
   fi
 
   if [ ! -z ${musicsharename:+x} ]
